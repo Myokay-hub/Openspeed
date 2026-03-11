@@ -1,4 +1,4 @@
-# ⬡ AgentOS · Claude 智能体监控平台
+# ⬡ Openspeed · 智能体监控平台
 
 > 本地优先、数据安全、开源可改 — 基于 Claude Sonnet API 的全功能智能体平台
 
