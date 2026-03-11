@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentOS · 智能体平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══════════════════════════════════ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-hex">⬡</div>
+    <span class="brand-name">AgentOS</span>
+    <span class="brand-tag">Claude Sonnet</span>
+  </div>
+  <div class="topbar-center">
+    <div class="sys-status">
+      <span class="sys-dot" id="sysDot"></span>
+      <span id="sysLabel">初始化中...</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="stat-chip" id="chipCalls">调用 <b>0</b></span>
+    <span class="stat-chip" id="chipTokens">Token <b>0</b></span>
+    <span class="clock" id="clock">--:--:--</span>
+  </div>
+</header>
+
+<!-- ═══ SHELL ════════════════════════════════════ -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-group">
+      <div class="nav-label">主功能</div>
+      <a class="nav-item active" data-view="chat" href="#">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        智能对话
+      </a>
+      <a class="nav-item" data-view="monitor" href="#">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        运行监控
+        <span class="nav-pip live">实时</span>
+      </a>
+      <a class="nav-item" data-view="security" href="#">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        安全中心
+      </a>
+      <a class="nav-item" data-view="logs" href="#">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        请求日志
+      </a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">配置</div>
+      <a class="nav-item" data-view="settings" href="#">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        模型设置
+      </a>
+      <a class="nav-item" data-view="prompts" href="#">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        提示词库
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sf-row"><span class="sf-label">Node.js</span><span class="sf-val" id="sfNode">—</span></div>
+      <div class="sf-row"><span class="sf-label">本次调用</span><span class="sf-val green" id="sfCalls">0</span></div>
+      <div class="sf-row"><span class="sf-label">消耗 Token</span><span class="sf-val cyan" id="sfTokens">0</span></div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="main">
+
+    <!-- ── 对话视图 ── -->
+    <section class="view active" id="view-chat">
+      <div class="view-head">
+        <div>
+          <h1 class="view-title">智能对话</h1>
+          <p class="view-sub">Claude Sonnet · 全程加密 · 数据不落盘</p>
+        </div>
+        <div class="view-actions">
+          <button class="btn" onclick="App.chat.clear()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            清空
+          </button>
+          <button class="btn" onclick="App.chat.export()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            导出
+          </button>
+        </div>
+      </div>
+
+      <div class="security-ribbon" id="secRibbon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>对话内容通过 HTTPS 加密直连 Anthropic API · 本服务器不存储任何对话内容 · API Key 保存于本机配置文件</span>
+      </div>
+
+      <div class="chat-wrap">
+        <div class="chat-messages" id="chatMessages">
+          <!-- Greeting inserted by JS -->
+        </div>
+        <div class="chat-compose">
+          <div class="compose-box">
+            <textarea id="chatInput" class="compose-input" placeholder="输入消息… (Enter 发送 / Shift+Enter 换行)" rows="1"></textarea>
+            <button id="sendBtn" class="send-btn" onclick="App.chat.send()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <div class="compose-meta">
+            <span id="modelBadge" class="model-badge">claude-sonnet-4-20250514</span>
+            <span id="charCnt" class="char-cnt">0 / 4096</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 监控视图 ── -->
+    <section class="view" id="view-monitor">
+      <div class="view-head">
+        <div>
+          <h1 class="view-title">运行监控</h1>
+          <p class="view-sub">API 调用、Token 消耗与性能追踪</p>
+        </div>
+        <button class="btn primary" onclick="App.monitor.refresh()">↻ 刷新</button>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card" style="--accent:#00ffb4">
+          <div class="stat-icon-wrap" style="background:rgba(0,255,180,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00ffb4" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-val" id="mCalls">0</div>
+            <div class="stat-label">总调用次数</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--accent:#22d3ee">
+          <div class="stat-icon-wrap" style="background:rgba(34,211,238,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-val" id="mTokens">0</div>
+            <div class="stat-label">Token 消耗</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--accent:#fbbf24">
+          <div class="stat-icon-wrap" style="background:rgba(251,191,36,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-val" id="mLatency">—</div>
+            <div class="stat-label">平均延迟 (ms)</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--accent:#34d399">
+          <div class="stat-icon-wrap" style="background:rgba(52,211,153,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-val" id="mSuccess">100%</div>
+            <div class="stat-label">请求成功率</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><span class="card-title">延迟走势</span><span class="card-sub">最近 20 次</span></div>
+          <div class="sparkline-wrap">
+            <canvas id="latencyChart" height="80"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">费用估算</span><span class="card-sub">Sonnet 4 定价</span></div>
+          <div class="cost-breakdown" id="costBreakdown">
+            <div class="cost-row"><span>输入 Token</span><span id="cInTok">0</span></div>
+            <div class="cost-row"><span>输出 Token</span><span id="cOutTok">0</span></div>
+            <div class="cost-row"><span>输入费用</span><span id="cInCost">¥0.0000</span></div>
+            <div class="cost-row"><span>输出费用</span><span id="cOutCost">¥0.0000</span></div>
+            <div class="cost-row total"><span>总计估算</span><span id="cTotal" class="green">¥0.0000</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 调用历史表 -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">调用历史</span><span class="card-sub">最近 50 条</span></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th>#</th><th>时间</th><th>模型</th>
+              <th>输入 Token</th><th>输出 Token</th>
+              <th>延迟</th><th>状态</th><th>摘要</th>
+            </tr></thead>
+            <tbody id="historyTable"><tr><td colspan="8" class="empty-row">暂无记录</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 安全视图 ── -->
+    <section class="view" id="view-security">
+      <div class="view-head">
+        <div>
+          <h1 class="view-title">安全中心</h1>
+          <p class="view-sub">数据保护、传输安全与风险评估</p>
+        </div>
+        <button class="btn danger" onclick="App.security.clearKey()">⚠ 清除 API Key</button>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><span class="card-title">安全检查项</span></div>
+          <div class="check-list" id="securityChecks"><!-- filled by JS --></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">数据流向</span></div>
+          <div class="flow-diagram">
+            <div class="flow-node user">👤<br><span>您的输入</span></div>
+            <div class="flow-arrow">
+              <div class="flow-label">HTTPS<br>加密</div>
+              <svg viewBox="0 0 40 12"><path d="M0 6h34" stroke="var(--green)" stroke-width="1.5"/><polygon points="34,2 40,6 34,10" fill="var(--green)"/></svg>
+            </div>
+            <div class="flow-node local">⬡<br><span>本机代理</span></div>
+            <div class="flow-arrow">
+              <div class="flow-label">TLS 1.3</div>
+              <svg viewBox="0 0 40 12"><path d="M0 6h34" stroke="var(--green)" stroke-width="1.5"/><polygon points="34,2 40,6 34,10" fill="var(--green)"/></svg>
+            </div>
+            <div class="flow-node api">☁<br><span>Anthropic</span></div>
+          </div>
+          <div class="flow-note">✓ 无中间服务器 &nbsp;·&nbsp; ✓ 不存储对话 &nbsp;·&nbsp; ✓ Key 不离开本机</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">实时日志流</span><span class="card-sub" id="wsStatus">WebSocket 连接中…</span></div>
+        <div class="realtime-log" id="realtimeLog"></div>
+      </div>
+    </section>
+
+    <!-- ── 日志视图 ── -->
+    <section class="view" id="view-logs">
+      <div class="view-head">
+        <div>
+          <h1 class="view-title">请求日志</h1>
+          <p class="view-sub" id="logCountLabel">0 条记录</p>
+        </div>
+        <div class="view-actions">
+          <button class="btn" onclick="App.logs.export()">⬇ 导出 CSV</button>
+          <button class="btn danger" onclick="App.logs.clear()">🗑 清除</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th>#</th><th>时间</th><th>级别</th><th>消息</th>
+            </tr></thead>
+            <tbody id="logsTable"><tr><td colspan="4" class="empty-row">暂无日志</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 设置视图 ── -->
+    <section class="view" id="view-settings">
+      <div class="view-head">
+        <div>
+          <h1 class="view-title">模型设置</h1>
+          <p class="view-sub">API 配置与推理参数</p>
+        </div>
+        <button class="btn primary" onclick="App.settings.save()">💾 保存配置</button>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><span class="card-title">API 认证</span></div>
+          <div class="form-body">
+            <div class="alert-box warn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              API Key 保存于本机 <code>config/settings.json</code>，不经过任何第三方服务器
+            </div>
+            <div class="form-group">
+              <label class="form-label">Anthropic API Key</label>
+              <input type="password" id="cfgApiKey" class="form-input" placeholder="sk-ant-...">
+              <p class="form-hint">从 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> 获取</p>
+            </div>
+            <div class="form-row-btns">
+              <button class="btn primary" onclick="App.settings.saveKey()">保存 Key</button>
+              <button class="btn danger" onclick="App.security.clearKey()">清除 Key</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">推理参数</span></div>
+          <div class="form-body">
+            <div class="form-group">
+              <label class="form-label">模型</label>
+              <select id="cfgModel" class="form-input">
+                <option value="claude-sonnet-4-20250514">Claude Sonnet 4（推荐）</option>
+                <option value="claude-opus-4-20250514">Claude Opus 4（旗舰）</option>
+                <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5（快速）</option>
+              </select>
+            </div>
+            <div class="form-2col">
+              <div class="form-group">
+                <label class="form-label">温度 <span class="form-val" id="tempVal">0.7</span></label>
+                <input type="range" id="cfgTemp" class="form-range" min="0" max="1" step="0.05" value="0.7"
+                  oninput="document.getElementById('tempVal').textContent=this.value">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Tokens</label>
+                <input type="number" id="cfgMaxTok" class="form-input" value="1000" min="100" max="8096">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">系统提示词 (System Prompt)</span></div>
+        <div class="form-body">
+          <textarea id="cfgSystem" class="form-input" rows="5"
+            placeholder="定义 AI 的角色、风格和限制…"></textarea>
+          <div class="alert-box info" style="margin-top:12px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            系统提示词附加在每次请求的开头，用于设定 AI 行为。修改后立即生效。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 提示词库视图 ── -->
+    <section class="view" id="view-prompts">
+      <div class="view-head">
+        <div>
+          <h1 class="view-title">提示词库</h1>
+          <p class="view-sub">快速插入常用提示模板</p>
+        </div>
+      </div>
+      <div class="prompts-grid" id="promptsGrid"><!-- filled by JS --></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
